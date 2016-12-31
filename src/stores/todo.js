@@ -7,6 +7,16 @@ let todos = [
     {id: 2, text: 'learn react', status: true}
 ];
 
+const addTodo = data => {
+    todos = [...todos, {id: todos.length + 1, text: data, status: false}];
+};
+
+const changeStatus = id => {
+    const idx = todos.findIndex((todo, idx) => todo.id === id);
+    todos[idx].status = !todos[idx].status;
+    todos = [...todos];
+};
+
 class TodoStore extends EventEmitter {
     get todos() {
         return todos;
@@ -27,14 +37,12 @@ const store = new TodoStore();
 appDispatcher.register(action => {
     switch(action.type) {
         case appConstants.ADD_TODO: {
-            todos = [...todos, {id: todos.length + 1, text: action.payload, status: false}];
+            addTodo(action.payload);
             store.emitChange();
             break;
         }
         case appConstants.CHANGE_TODO_STATUS: {
-            const idx = todos.findIndex((todo, idx) => todo.id === action.payload.id);
-            todos[idx].status = !todos[idx].status;
-            todos = [...todos];
+            changeStatus(action.payload.id);
             store.emitChange();
             break;
         }
