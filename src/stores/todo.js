@@ -1,20 +1,23 @@
+import immutable from 'immutable';
 import { EventEmitter } from 'events';
-import appDispatcher from './../dispatcher';
-import appConstants from './../constants';
 
-let todos = [
-    {id: 1, text: 'learn angular 1.6', status: false},
-    {id: 2, text: 'learn react', status: true}
-];
+import appConstants from './../constants';
+import appDispatcher from './../dispatcher';
+
+let todos = immutable.List([
+    {id: 1, text: 'learn angular 1.6', status: false, tag: 'home'},
+    {id: 2, text: 'learn react', status: true, tag: 'work'}
+]);
 
 const addTodo = data => {
-    todos = [...todos, {id: todos.length + 1, text: data, status: false}];
+    const todo = {id: todos.length + 1, text: data, status: false};
+    todos = todos.push(todo);
 };
 
-const changeStatus = id => {
-    const idx = todos.findIndex((todo, idx) => todo.id === id);
-    todos[idx].status = !todos[idx].status;
-    todos = [...todos];
+const changeStatus = data => {
+    const idx = todos.findKey((todo, idx) => todo.id === data.id);
+    const todo = {id: idx, text: data.text, status: !data.status};
+    todos = todos.splice(idx, 1, todo);
 };
 
 class TodoStore extends EventEmitter {
@@ -42,7 +45,7 @@ appDispatcher.register(action => {
             break;
         }
         case appConstants.CHANGE_TODO_STATUS: {
-            changeStatus(action.payload.id);
+            changeStatus(action.payload);
             store.emitChange();
             break;
         }
