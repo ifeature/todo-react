@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { findDOMNode } from 'react-dom';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import shortid from 'shortid';
 import classNames from 'classnames';
@@ -11,6 +12,24 @@ import Todo from './Todo';
 const getState = () => ({
   todos: todoStore.todos
 });
+
+const HOC = InnerComponent => class extends Component {
+  render() {
+    return (
+      <InnerComponent {...this.props} />
+    );
+  }
+};
+
+class Input extends Component {
+  render() {
+    return (
+      <input ref={input => this.input = input} type="text" onChange={this.props.update} />
+    );
+  }
+}
+
+const InputHOC = HOC(Input);
 
 class Todos extends Component {
   constructor(...props) {
@@ -59,13 +78,22 @@ class Todos extends Component {
     });
   };
 
+  update() {
+    this.setState({
+      a: findDOMNode(this.a).value
+    });
+  }
+
   render() {
     const { todos, filter } = this.state;
-    console.log('tag: ', this.props.params.tagId);
-    console.log(this.props);
 
     return (
       <div className="todo-app">
+        <div>
+          <InputHOC ref={component => this.a = component} update={this.update.bind(this)} />
+          <hr />
+          {this.state.a}
+        </div>
         <div>
           <button type="button" onClick={this.viewCompleted}>View Completed</button>
           <button type="button" onClick={this.viewAll}>View All</button>
@@ -100,7 +128,7 @@ class Todos extends Component {
                 const todoClass = classNames({complete: todo.status});
 
                 return (
-                  <Todo key={shortid.generate()} className={todoClass} onClick={this.handleStatusChange.bind(this, todo)} id="123">{todo.text}</Todo>
+                  <Todo key={shortid.generate()} className={todoClass} onClick={this.handleStatusChange.bind(this, todo)} id="12345">{todo.text}</Todo>
                 );
              })
           }

@@ -16,7 +16,7 @@ const addTodo = data => {
 
 const changeStatus = data => {
     const idx = todos.findKey((todo, idx) => todo.id === data.id);
-    const todo = {id: idx, text: data.text, status: !data.status};
+    const todo = {id: idx, text: data.text, status: !data.status, tag: data.tag};
     todos = todos.splice(idx, 1, todo);
 };
 
